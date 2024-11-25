@@ -3,6 +3,8 @@ import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
 import { db } from "@/server/db";
+import credentials from "next-auth/providers/credentials";
+import { PrismaClient } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -32,7 +34,13 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    DiscordProvider,
+    credentials({
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      authorize: authorize(db),
+    }),
     /**
      * ...add more providers here.
      *
@@ -54,3 +62,16 @@ export const authConfig = {
     }),
   },
 } satisfies NextAuthConfig;
+
+function authorize(prisma: PrismaClient) {
+  return async (
+    credentials: Partial<Record<"email" | "password", unknown>>,
+    request: Request,
+  ) => {
+    const user = await prisma.user.findUnique({
+      where: { email: credentials.email as string },
+    });
+    if (!user) return null;
+    return user;
+  };
+}
