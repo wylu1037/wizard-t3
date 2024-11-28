@@ -5,6 +5,7 @@ import DiscordProvider from "next-auth/providers/discord";
 import { db } from "@/server/db";
 import credentials from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
+import { compare } from "bcryptjs";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -63,15 +64,28 @@ export const authConfig = {
   },
 } satisfies NextAuthConfig;
 
+// authorize function for Credentials
 function authorize(prisma: PrismaClient) {
   return async (
     credentials: Partial<Record<"email" | "password", unknown>>,
     request: Request,
   ) => {
-    const user = await prisma.user.findUnique({
-      where: { email: credentials.email as string },
+    if (!credentials) throw new Error("Missing credentials");
+    if (!credentials.email)
+      throw new Error('"email" is required in credentials');
+    if (!credentials.password)
+      throw new Error('"password" is required in credentials');
+    const maybeUser = await prisma.user.findFirst({
+      where: { email: credentials.email },
+      select: { id: true, email: true, password: true },
     });
-    if (!user) return null;
-    return user;
+    if (!maybeUser?.password) return null;
+    // verify the input password with stored hash
+    const isValid = await compare(
+      credentials.password as string,
+      maybeUser.password,
+    );
+    if (!isValid) return null;
+    return { id: maybeUser.id, email: maybeUser.email };
   };
 }
