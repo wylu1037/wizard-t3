@@ -40,6 +40,7 @@ export default function Signup() {
         setError(result.error);
       } else {
         router.push("/");
+        router.refresh();
       }
     } catch (error) {
       console.error(error);
