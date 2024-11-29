@@ -4,10 +4,50 @@ import Link from "next/link";
 import { Label } from "@radix-ui/react-label";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { Button } from "@/components/ui/button";
+import { useCreateUser } from "@/lib/hooks/user";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { mutateAsync: signUp } = useCreateUser();
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      await signUp({
+        data: {
+          email,
+          password,
+        },
+      });
+
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        router.push("/");
+      }
+    } catch (error) {
+      console.error(error);
+      setError(error instanceof Error ? error.message : "注册失败，请重试");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -35,7 +75,12 @@ export default function Signup() {
         </Link>
       </div>
 
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
         <div className="space-y-2">
           <Label htmlFor="email" className="text-sm font-medium leading-none">
             Email
@@ -46,6 +91,7 @@ export default function Signup() {
             placeholder="Enter your email"
             className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition-colors placeholder:text-gray-400 hover:border-gray-300 focus:border-purple-600 focus:ring-2 focus:ring-purple-100"
             value={email}
+            disabled={isLoading}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
@@ -62,23 +108,31 @@ export default function Signup() {
             placeholder="••••••••"
             className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition-colors placeholder:text-gray-400 hover:border-gray-300 focus:border-purple-600 focus:ring-2 focus:ring-purple-100"
             value={password}
+            disabled={isLoading}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-      </div>
 
-      <div>
-        <button className="w-full rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">
-          Sign up
-        </button>
+        <div>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+          >
+            Sign up
+          </Button>
 
-        <div className="my-6 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
+          <div className="my-6 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
 
-        <button className="flex w-full items-center justify-center space-x-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">
-          <FcGoogle size={18} />
-          <span>Sign up with Google</span>
-        </button>
-      </div>
+          <Button
+            disabled={isLoading}
+            className="flex w-full items-center justify-center space-x-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+          >
+            <FcGoogle size={18} />
+            <span>Sign up with Google</span>
+          </Button>
+        </div>
+      </form>
 
       <div className="text-center text-sm text-gray-600/60">
         Already have an account?{" "}

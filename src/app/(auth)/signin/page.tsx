@@ -4,10 +4,12 @@ import Link from "next/link";
 import { Label } from "@radix-ui/react-label";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { Button } from "@/components/ui/button";
 
 export default function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -29,7 +31,7 @@ export default function Signin() {
         </Link>
         <Link
           href="/signin"
-          className="w-full rounded-md border-[0.5px] border-foreground/10 bg-white px-3 py-1.5 text-center text-sm font-medium shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]"
+          className="w-full rounded-md border-[0.5px] border-foreground/10 bg-background px-3 py-1.5 text-center text-sm font-medium shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]"
         >
           Log in
         </Link>
@@ -44,7 +46,7 @@ export default function Signin() {
             id="email"
             type="email"
             placeholder="Enter your email"
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition-colors placeholder:text-gray-400 hover:border-gray-300 focus:border-purple-600 focus:ring-2 focus:ring-purple-100"
+            className="w-full rounded-lg border border-gray-200 bg-background px-3 py-2 text-sm outline-none transition-colors placeholder:text-gray-400 hover:border-gray-300 focus:border-purple-600 focus:ring-2 focus:ring-purple-100"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -62,7 +64,7 @@ export default function Signin() {
             id="password"
             type="password"
             placeholder="••••••••"
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition-colors placeholder:text-gray-400 hover:border-gray-300 focus:border-purple-600 focus:ring-2 focus:ring-purple-100"
+            className="w-full rounded-lg border border-gray-200 bg-background px-3 py-2 text-sm outline-none transition-colors placeholder:text-gray-400 hover:border-gray-300 focus:border-purple-600 focus:ring-2 focus:ring-purple-100"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -88,16 +90,23 @@ export default function Signin() {
       </div>
 
       <div>
-        <button className="w-full rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+        >
           Sign in
-        </button>
+        </Button>
 
         <div className="my-6 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
 
-        <button className="flex w-full items-center justify-center space-x-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">
+        <Button
+          disabled={isLoading}
+          className="flex w-full items-center justify-center space-x-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+        >
           <FcGoogle size={18} />
           <span>Sign in with Google</span>
-        </button>
+        </Button>
       </div>
 
       <div className="text-center text-sm text-gray-600/60">

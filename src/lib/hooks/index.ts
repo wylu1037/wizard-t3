@@ -5,7 +5,6 @@
 /* eslint-disable */
 // @ts-nocheck
 
-export * from './post';
 export * from './account';
 export * from './session';
 export * from './user';

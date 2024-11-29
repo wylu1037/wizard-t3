@@ -7,48 +7,6 @@
 
 const metadata = {
     models: {
-        post: {
-            name: 'Post', fields: {
-                id: {
-                    name: "id",
-                    type: "Int",
-                    isId: true,
-                    attributes: [{ "name": "@default", "args": [] }],
-                    isAutoIncrement: true,
-                }, name: {
-                    name: "name",
-                    type: "String",
-                }, createdAt: {
-                    name: "createdAt",
-                    type: "DateTime",
-                    attributes: [{ "name": "@default", "args": [] }],
-                }, updatedAt: {
-                    name: "updatedAt",
-                    type: "DateTime",
-                    attributes: [{ "name": "@updatedAt", "args": [] }],
-                }, createdBy: {
-                    name: "createdBy",
-                    type: "User",
-                    isDataModel: true,
-                    backLink: 'posts',
-                    isRelationOwner: true,
-                    foreignKeyMapping: { "id": "createdById" },
-                }, createdById: {
-                    name: "createdById",
-                    type: "String",
-                    isForeignKey: true,
-                    relationField: 'createdBy',
-                },
-            }
-            , uniqueConstraints: {
-                id: {
-                    name: "id",
-                    fields: ["id"]
-                },
-            }
-            ,
-        }
-        ,
         account: {
             name: 'Account', fields: {
                 id: {
@@ -201,12 +159,6 @@ const metadata = {
                     isDataModel: true,
                     isArray: true,
                     backLink: 'user',
-                }, posts: {
-                    name: "posts",
-                    type: "Post",
-                    isDataModel: true,
-                    isArray: true,
-                    backLink: 'createdBy',
                 },
             }
             , uniqueConstraints: {
