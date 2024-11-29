@@ -6,10 +6,21 @@ export const metadata: Metadata = {
   description: "Authentication forms built using the components.",
 };
 
-export default function AuthLayout({ children }: PropsWithChildren) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex h-screen w-screen items-center justify-center">
-      {children}
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 p-4">
+      <div className="w-full max-w-[400px] space-y-6">
+        <div className="flex justify-center">
+          <div className="h-10 w-10 rounded-lg bg-purple-600 p-2">
+            <div className="h-full w-full rounded-full bg-white/90" />
+          </div>
+        </div>
+        {children}
+      </div>
     </div>
   );
 }
